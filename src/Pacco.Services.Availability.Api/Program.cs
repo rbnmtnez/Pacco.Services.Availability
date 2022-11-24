@@ -6,6 +6,12 @@ using Pacco.Services.Availability.Application;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Builder;
 using Pacco.Services.Availability.Infrastructure.Mongo;
+using Convey.WebApi.CQRS;
+using Convey.WebApi;
+using Pacco.Services.Availability.Application.Queries;
+using Pacco.Services.Availability.Application.DTO;
+using System.Collections.Generic;
+using Pacco.Services.Availability.Application.Commands;
 
 namespace Pacco.Services.Availability.Api
 {
@@ -21,19 +27,18 @@ namespace Pacco.Services.Availability.Api
                 .ConfigureServices(services =>
                 {
                     services
-                    .AddControllers()
-                    .AddNewtonsoftJson();
-                    services
                     .AddConvey()
+                    .AddWebApi()
                     .AddApplication()
                     .AddInfrastructure()
                     .Build();
                 })
-            .Configure(app =>
-            {
-                app.UseInfrastructure();
-                app.UseRouting()
-                .UseEndpoints(endpoints => endpoints.MapControllers());
-            });
+            .Configure(app => app
+                .UseInfrastructure()
+                .UseDispatcherEndpoints(endpoints => endpoints
+                    .Get<GetResources, IEnumerable<ResourceDto>>("resources")
+                    .Get<GetResource, ResourceDto>("resources/{resourceId}")
+                    .Post<AddResource>("resources", afterDispatch: (cmd, ctx) =>
+                        ctx.Response.Created($"resources/{cmd.ResourceId}"))));
     }
 }
