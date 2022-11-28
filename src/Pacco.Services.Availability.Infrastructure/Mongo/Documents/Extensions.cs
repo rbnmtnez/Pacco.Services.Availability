@@ -15,7 +15,7 @@ namespace Pacco.Services.Availability.Infrastructure.Mongo.Documents
                 document.Id,
                 document.Tags,
                 document.Reservations?
-                .Select(r => new Reservation(r.TimeStamp.AsDateTime(), r.Priority)));
+                .Select(r => new Reservation(r.TimeStamp.AsDateTime(), r.Priority)), document.Version);
 
         public static ResourceDocument AsDocument(this Resource entity)
              => new ResourceDocument
