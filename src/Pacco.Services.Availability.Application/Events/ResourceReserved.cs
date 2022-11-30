@@ -3,6 +3,7 @@ using System;
 
 namespace Pacco.Services.Availability.Application.Events
 {
+    [Contract]
     public class ResourceReserved: IEvent
     {
         public Guid ResourceId { get; }

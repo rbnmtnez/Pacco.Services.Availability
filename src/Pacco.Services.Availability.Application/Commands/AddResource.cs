@@ -5,6 +5,7 @@ using System.Text;
 
 namespace Pacco.Services.Availability.Application.Commands
 {
+    [Contract]
     public class AddResource : ICommand
     {
         public Guid ResourceId { get; }
