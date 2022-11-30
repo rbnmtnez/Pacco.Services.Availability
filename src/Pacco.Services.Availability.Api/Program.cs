@@ -4,14 +4,13 @@ using Microsoft.AspNetCore.Hosting;
 using Convey;
 using Pacco.Services.Availability.Application;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.AspNetCore.Builder;
-using Pacco.Services.Availability.Infrastructure.Mongo;
 using Convey.WebApi.CQRS;
 using Convey.WebApi;
 using Pacco.Services.Availability.Application.Queries;
 using Pacco.Services.Availability.Application.DTO;
 using System.Collections.Generic;
 using Pacco.Services.Availability.Application.Commands;
+using Pacco.Services.Availability.Infrastructure;
 
 namespace Pacco.Services.Availability.Api
 {
