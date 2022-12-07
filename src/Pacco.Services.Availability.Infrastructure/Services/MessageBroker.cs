@@ -15,12 +15,21 @@ namespace Pacco.Services.Availability.Infrastructure.Services
     {
         private readonly IBusPublisher _busPublisher;
         private readonly IMessageOutbox _outbox;
+        private readonly IMessagePropertiesAccessor _messagePropertiesAccessor;
+        private readonly ICorrelationContextAccessor _correlationContextAccessor;
         private readonly ILogger<MessageBroker> _logger;
 
-        public MessageBroker(IBusPublisher busPublisher, IMessageOutbox outbox, ILogger<MessageBroker> logger)
+        public MessageBroker(
+            IBusPublisher busPublisher,
+            IMessageOutbox outbox, 
+            IMessagePropertiesAccessor messagePropertiesAccessor, 
+            ICorrelationContextAccessor correlationContextAccessor,
+            ILogger<MessageBroker> logger)
         {
             _busPublisher = busPublisher;
             _outbox = outbox;
+            _messagePropertiesAccessor = messagePropertiesAccessor;
+            _correlationContextAccessor = correlationContextAccessor;
             _logger = logger;
         }
 
@@ -30,6 +39,9 @@ namespace Pacco.Services.Availability.Infrastructure.Services
         {
             if (events is null)
                 return;
+
+            var correlationId = _messagePropertiesAccessor.MessageProperties?.CorrelationId;
+            var correlationContext = _correlationContextAccessor.CorrelationContext;
 
             foreach (var @event in events)
             {
@@ -44,10 +56,10 @@ namespace Pacco.Services.Availability.Infrastructure.Services
 
                 if (_outbox.Enabled)
                 {
-                    await _outbox.SendAsync(@event, messageId: messageId);
+                    await _outbox.SendAsync(@event, messageId: messageId, correlationId: correlationId, messageContext: correlationContext);
                     continue;
                 }
-                await _busPublisher.PublishAsync(@event, messageId);
+                await _busPublisher.PublishAsync(@event, messageId, correlationId, messageContext: correlationContext);
             }
         }
     }
