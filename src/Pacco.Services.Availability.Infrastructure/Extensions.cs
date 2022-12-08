@@ -2,6 +2,7 @@
 using Convey.CQRS.Commands;
 using Convey.CQRS.Events;
 using Convey.CQRS.Queries;
+using Convey.HTTP;
 using Convey.MessageBrokers.CQRS;
 using Convey.MessageBrokers.Outbox;
 using Convey.MessageBrokers.Outbox.Mongo;
@@ -15,12 +16,14 @@ using Pacco.Services.Availability.Application;
 using Pacco.Services.Availability.Application.Commands;
 using Pacco.Services.Availability.Application.Events.External;
 using Pacco.Services.Availability.Application.Services;
+using Pacco.Services.Availability.Application.Services.Clients;
 using Pacco.Services.Availability.Core.Repositories;
 using Pacco.Services.Availability.Infrastructure.Decorators;
 using Pacco.Services.Availability.Infrastructure.Exceptions;
 using Pacco.Services.Availability.Infrastructure.Mongo.Documents;
 using Pacco.Services.Availability.Infrastructure.Mongo.Repositories;
 using Pacco.Services.Availability.Infrastructure.Services;
+using Pacco.Services.Availability.Infrastructure.Services.Clients;
 using System;
 
 namespace Pacco.Services.Availability.Infrastructure
@@ -35,6 +38,7 @@ namespace Pacco.Services.Availability.Infrastructure
             builder.Services.AddTransient<IEventProcessor, EventProcessor>();
             builder.Services.TryDecorate(typeof(ICommandHandler<>), typeof(OutboxCommandHandlerDecorator<>));
             builder.Services.TryDecorate(typeof(IEventHandler<>), typeof(OutboxEventHandlerDecorator<>));
+            builder.Services.AddTransient<ICustomerServiceClient, CustomerServiceClient>();
 
             builder
                 .AddErrorHandler<ExceptionToResponseMapper>()
@@ -44,7 +48,8 @@ namespace Pacco.Services.Availability.Infrastructure
                 .AddMongoRepository<ResourceDocument, Guid>("resources")
                 .AddRabbitMq()
                 .AddExceptionToMessageMapper<ExceptionToMessageMapper>()
-                .AddMessageOutbox(o => o.AddMongo());
+                .AddMessageOutbox(o => o.AddMongo())
+                .AddHttpClient();
 
             return builder;
         }

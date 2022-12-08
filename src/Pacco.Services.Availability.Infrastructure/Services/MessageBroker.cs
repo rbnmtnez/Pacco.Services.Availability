@@ -47,7 +47,7 @@ namespace Pacco.Services.Availability.Infrastructure.Services
             {
                 if (@event is null)
                 {
-                    continue;
+                    continue;   
                 }
 
                 var messageId = Guid.NewGuid().ToString("N");

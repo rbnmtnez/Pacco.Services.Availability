@@ -8,6 +8,6 @@ namespace Pacco.Services.Availability.Application.Events.External.Handlers
     {
         public async Task HandleAsync(CustomerCreated @event)
             => await Task.CompletedTask;
-        
+
     }
 }
